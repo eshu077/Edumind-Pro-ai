@@ -28,9 +28,9 @@ export async function refreshAccessToken(): Promise<string | null> {
       method: "POST",
       credentials: "include",
     });
-    
+
     if (!res.ok) return null;
-    
+
     const data = await res.json();
     useAuthStore.getState().setSession(data.user, data.accessToken);
     return data.accessToken as string;
@@ -72,7 +72,7 @@ export async function apiFetch<T = any>(path: string, options: RequestOptions = 
   // 3. Parse Response Body
   const contentType = res.headers.get("content-type") || "";
   let body = null;
-  
+
   if (contentType.includes("application/json")) {
     body = await res.json();
   }
