@@ -80,7 +80,7 @@ export default function AdminPage() {
                   <td className="px-4 py-3 text-subtle">{u.xp}</td>
                   <td className="px-4 py-3 text-subtle">{u.streak}</td>
                   <td className="px-4 py-3 text-right">
-                    {u._id !== user._id && (
+                    {u._id !== user.id && (
                       <button onClick={() => handleDelete(u._id)} className="text-subtle hover:text-danger">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
