@@ -22,12 +22,6 @@ services:
         value: 15m
       - key: JWT_REFRESH_EXPIRES
         value: 30d
-      - key: GOOGLE_CLIENT_ID
-        sync: false
-      - key: GOOGLE_CLIENT_SECRET
-        sync: false
-      - key: GOOGLE_CALLBACK_URL
-        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT

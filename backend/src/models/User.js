@@ -15,11 +15,10 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      required: true,
       minlength: 8,
       select: false,
-      // Not required: users who sign up via Google have no password
     },
-    googleId: { type: String, unique: true, sparse: true },
     avatar: { type: String, default: "" },
     role: { type: String, enum: ["student", "admin"], default: "student" },
 

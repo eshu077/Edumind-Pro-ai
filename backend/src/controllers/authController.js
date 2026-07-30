@@ -243,25 +243,6 @@ async function getMe(req, res) {
   return res.json({ success: true, user: req.user.toSafeObject() });
 }
 
-// GET /api/auth/google/callback  (after passport.authenticate succeeds)
-async function googleCallback(req, res, next) {
-  try {
-    const user = req.user;
-    const accessToken = generateAccessToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
-
-    user.refreshTokens = [...(user.refreshTokens || []), refreshToken].slice(-5);
-    await user.save({ validateBeforeSave: false });
-
-    setRefreshCookie(res, refreshToken);
-
-    // Hand the access token to the frontend via a short-lived redirect fragment
-    return res.redirect(`${CLIENT_URL}/auth/callback#accessToken=${accessToken}`);
-  } catch (err) {
-    next(err);
-  }
-}
-
 module.exports = {
   signup,
   verifyEmail,
@@ -271,5 +252,4 @@ module.exports = {
   forgotPassword,
   resetPassword,
   getMe,
-  googleCallback,
 };

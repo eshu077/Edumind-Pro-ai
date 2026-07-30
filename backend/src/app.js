@@ -5,7 +5,6 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
-const { passport } = require("./config/passport");
 
 const authRoutes = require("./routes/authRoutes");
 const chatRoutes = require("./routes/chatRoutes");
@@ -36,7 +35,6 @@ app.use(cookieParser());
 app.use(mongoSanitize());
 app.use(xss());
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
-app.use(passport.initialize());
 
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "EduMind Pro AI API is running" });
