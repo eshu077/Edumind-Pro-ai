@@ -7,8 +7,9 @@ phase by phase.
 
 ## What's built
 
-- **Auth**: email/password with JWT + rotating refresh tokens, email
-  verification, password reset, protected routes.
+- **Auth**: email/password with JWT + rotating refresh tokens, password
+  reset, protected routes. Signup logs you in immediately — no email
+  verification step.
 - **AI Tutor**: streaming chat (Groq), markdown + syntax-highlighted code,
   GFM tables, Mermaid diagrams, math (KaTeX), conversation memory, voice
   input and text-to-speech (both browser-native, no key needed), and
@@ -49,7 +50,9 @@ Being direct about the gap from the original all-in-one request:
 - **A code execution / coding playground feature** — intentionally left
   out
 - **Google OAuth login** — intentionally left out to keep setup simple
-  (email/password + email verification covers auth)
+  (email/password is the only login method)
+- **Email verification on signup** — intentionally left out too, for the
+  same reason; signup logs you in immediately
 - Raw document storage — uploaded documents are processed to
   text/embeddings only, never persisted as files; Cloudinary is used only
   for avatars
@@ -70,7 +73,12 @@ Being direct about the gap from the original all-in-one request:
 3. Network Access → add `0.0.0.0/0` for now (or your IP)
 4. Copy the connection string into `backend/.env` as `MONGO_URI`
 
-## 3. Email (SMTP)
+## 3. Email (SMTP) — only needed for "Forgot password"
+
+Signup no longer sends any email, so SMTP is entirely optional now — the
+only feature that uses it is "Forgot password." If you skip this, every
+other feature (including signup/login) still works fine; only the
+password-reset email won't send.
 
 If using Gmail: enable 2FA on the account, then create an "App Password"
 (Google Account → Security → App passwords) and use that as `SMTP_PASS`.
@@ -137,9 +145,9 @@ npm install
 npm run dev              # http://localhost:3000
 ```
 
-Visit `http://localhost:3000`, sign up, check your inbox for the
-verification email, verify, then log in. From the dashboard sidebar:
-AI Tutor for general chat (mic + Listen buttons included), Documents for
+Visit `http://localhost:3000`, sign up — you're logged straight into the
+dashboard, no email verification step. From the sidebar: AI Tutor for
+general chat (mic + Listen buttons included), Documents for
 grounded Q&A, Roadmaps for a study plan, Knowledge Check for quizzes,
 AI Notes for notes/flashcards/cheat sheets, Study Planner for daily
 tasks and streaks, Career Mentor for a skills action plan, and Settings
@@ -175,8 +183,9 @@ In MongoDB Atlas, Network Access should already allow `0.0.0.0/0` from
 local setup — that also covers Render's dynamic IPs, so no change needed
 there.
 
-**Smoke-test in this order once both are live**: sign up → verify email
-→ log in → AI Tutor sends a message (try the mic + Listen buttons) →
+**Smoke-test in this order once both are live**: sign up (you'll be
+logged straight in) → AI Tutor sends a message (try the mic + Listen
+buttons) →
 upload a document in Documents → generate a roadmap → generate a quiz →
 generate a note → add a task in the Study Planner → generate a Career
 Mentor plan → upload an avatar in Settings → (optionally) promote
@@ -294,7 +303,7 @@ backend/
     utils/          # chunking, embeddings, text extraction, provider routing
 frontend/
   app/
-    (auth)/          # login, signup, password reset, verify-email
+    (auth)/          # login, signup, forgot/reset password
     dashboard/        # every feature page, one folder each
   components/         # shared UI (button, card, markdown renderer, etc.)
   lib/                 # one API client module per feature

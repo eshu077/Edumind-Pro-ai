@@ -14,7 +14,6 @@ export interface AdminUser {
   name: string;
   email: string;
   role: "student" | "admin";
-  isEmailVerified: boolean;
   xp: number;
   streak: number;
   createdAt: string;

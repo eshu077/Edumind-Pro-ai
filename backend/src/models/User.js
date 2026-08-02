@@ -22,10 +22,6 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String, default: "" },
     role: { type: String, enum: ["student", "admin"], default: "student" },
 
-    isEmailVerified: { type: Boolean, default: false },
-    emailVerificationToken: { type: String, select: false },
-    emailVerificationExpires: { type: Date, select: false },
-
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
 
@@ -48,16 +44,6 @@ userSchema.methods.comparePassword = function (candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
-userSchema.methods.createEmailVerificationToken = function () {
-  const rawToken = crypto.randomBytes(32).toString("hex");
-  this.emailVerificationToken = crypto
-    .createHash("sha256")
-    .update(rawToken)
-    .digest("hex");
-  this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24h
-  return rawToken;
-};
-
 userSchema.methods.createPasswordResetToken = function () {
   const rawToken = crypto.randomBytes(32).toString("hex");
   this.passwordResetToken = crypto
@@ -75,7 +61,6 @@ userSchema.methods.toSafeObject = function () {
     email: this.email,
     avatar: this.avatar,
     role: this.role,
-    isEmailVerified: this.isEmailVerified,
     xp: this.xp,
     streak: this.streak,
     createdAt: this.createdAt,

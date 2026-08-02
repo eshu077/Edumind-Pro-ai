@@ -64,7 +64,6 @@ export default function AdminPage() {
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Role</th>
-                <th className="px-4 py-3 font-medium">Verified</th>
                 <th className="px-4 py-3 font-medium">XP</th>
                 <th className="px-4 py-3 font-medium">Streak</th>
                 <th className="px-4 py-3"></th>
@@ -76,7 +75,6 @@ export default function AdminPage() {
                   <td className="px-4 py-3 text-foreground">{u.name}</td>
                   <td className="px-4 py-3 text-subtle">{u.email}</td>
                   <td className="px-4 py-3 capitalize text-subtle">{u.role}</td>
-                  <td className="px-4 py-3 text-subtle">{u.isEmailVerified ? "Yes" : "No"}</td>
                   <td className="px-4 py-3 text-subtle">{u.xp}</td>
                   <td className="px-4 py-3 text-subtle">{u.streak}</td>
                   <td className="px-4 py-3 text-right">

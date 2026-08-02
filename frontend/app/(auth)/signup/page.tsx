@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,10 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signupSchema, type SignupInput } from "@/lib/validators";
 import { apiFetch } from "@/lib/api";
+import { useAuthStore } from "@/lib/auth-store";
 
 export default function SignupPage() {
+  const router = useRouter();
+  const setSession = useAuthStore((s) => s.setSession);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
 
   const {
     register,
@@ -24,28 +27,16 @@ export default function SignupPage() {
   async function onSubmit(values: SignupInput) {
     setServerError(null);
     try {
-      await apiFetch("/api/auth/signup", {
+      const data = await apiFetch<{ user: any; accessToken: string }>("/api/auth/signup", {
         method: "POST",
         body: JSON.stringify(values),
         skipAuth: true,
       });
-      setSubmitted(true);
+      setSession(data.user, data.accessToken);
+      router.push("/dashboard");
     } catch (err: any) {
       setServerError(err.message || "Something went wrong");
     }
-  }
-
-  if (submitted) {
-    return (
-      <AuthShell title="Check your inbox" subtitle="We sent you a verification link.">
-        <p className="text-sm text-subtle">
-          Click the link we emailed you to activate your account, then log in.
-        </p>
-        <Button asChild size="lg" className="mt-6 w-full">
-          <Link href="/login">Go to login</Link>
-        </Button>
-      </AuthShell>
-    );
   }
 
   return (

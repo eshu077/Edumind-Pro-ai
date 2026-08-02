@@ -6,7 +6,6 @@ export interface AuthUser {
   email: string;
   avatar?: string;
   role: "student" | "admin";
-  isEmailVerified: boolean;
   xp: number;
   streak: number;
 }

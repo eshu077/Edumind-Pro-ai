@@ -29,7 +29,7 @@ async function getStats(req, res, next) {
 async function listUsers(req, res, next) {
   try {
     const users = await User.find()
-      .select("name email role isEmailVerified xp streak createdAt")
+      .select("name email role xp streak createdAt")
       .sort("-createdAt")
       .limit(200);
     res.json({ success: true, users });

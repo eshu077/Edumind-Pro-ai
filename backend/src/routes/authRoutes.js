@@ -2,7 +2,6 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const {
   signup,
-  verifyEmail,
   login,
   refresh,
   logout,
@@ -24,7 +23,6 @@ const authLimiter = rateLimit({
 });
 
 router.post("/signup", authLimiter, signup);
-router.get("/verify-email", verifyEmail);
 router.post("/login", authLimiter, login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);

@@ -7,11 +7,7 @@ const {
   setRefreshCookie,
   clearRefreshCookie,
 } = require("../utils/tokens");
-const {
-  sendEmail,
-  verificationEmailTemplate,
-  resetPasswordEmailTemplate,
-} = require("../utils/sendEmail");
+const { sendEmail, resetPasswordEmailTemplate } = require("../utils/sendEmail");
 
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
 
@@ -31,7 +27,7 @@ async function issueSession(user, res, statusCode = 200) {
   });
 }
 
-// POST /api/auth/signup
+// POST /api/auth/signup — creates the account and logs the user in immediately, no email step
 async function signup(req, res, next) {
   try {
     const { name, email, password } = req.body;
@@ -49,52 +45,9 @@ async function signup(req, res, next) {
     }
 
     const user = new User({ name, email, password });
-    const rawToken = user.createEmailVerificationToken();
     await user.save();
 
-    const verifyLink = `${CLIENT_URL}/verify-email?token=${rawToken}`;
-    try {
-      await sendEmail({
-        to: user.email,
-        subject: "Verify your EduMind Pro AI account",
-        html: verificationEmailTemplate(user.name, verifyLink),
-      });
-    } catch (emailErr) {
-      console.error("Failed to send verification email:", emailErr.message);
-    }
-
-    return res.status(201).json({
-      success: true,
-      message: "Account created. Check your email to verify your account.",
-    });
-  } catch (err) {
-    next(err);
-  }
-}
-
-// GET /api/auth/verify-email?token=...
-async function verifyEmail(req, res, next) {
-  try {
-    const { token } = req.query;
-    if (!token) return res.status(400).json({ success: false, message: "Missing verification token" });
-
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
-    const user = await User.findOne({
-      emailVerificationToken: hashedToken,
-      emailVerificationExpires: { $gt: Date.now() },
-    }).select("+emailVerificationToken +emailVerificationExpires");
-
-    if (!user) {
-      return res.status(400).json({ success: false, message: "Verification link is invalid or expired" });
-    }
-
-    user.isEmailVerified = true;
-    user.emailVerificationToken = undefined;
-    user.emailVerificationExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    return res.json({ success: true, message: "Email verified successfully" });
+    return issueSession(user, res, 201);
   } catch (err) {
     next(err);
   }
@@ -116,10 +69,6 @@ async function login(req, res, next) {
     const match = await user.comparePassword(password);
     if (!match) {
       return res.status(401).json({ success: false, message: "Invalid email or password" });
-    }
-
-    if (!user.isEmailVerified) {
-      return res.status(403).json({ success: false, message: "Please verify your email before logging in" });
     }
 
     user.lastActiveAt = new Date();
@@ -245,7 +194,6 @@ async function getMe(req, res) {
 
 module.exports = {
   signup,
-  verifyEmail,
   login,
   refresh,
   logout,
